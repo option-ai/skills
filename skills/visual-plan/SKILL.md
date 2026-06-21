@@ -6,6 +6,8 @@ description: >-
   and open questions — instead of a flat Markdown plan rendered in the terminal.
 metadata:
   visibility: exported
+  author: option
+  version: "1.0.0"
 ---
 
 # Visual Plan (Self-Authored HTML)
@@ -270,11 +272,17 @@ Quality bar:
   the hierarchy.
 - Self-contained and robust: opening the file twice, or from any directory, must
   work identically.
-- Keep the prose at the quality of a serious technical plan — outcome-first,
-  grounded in real code, no marketing tone.
+- Keep the prose at the quality of a serious technical plan: outcome-first and
+  prose-first; state the objective and what "done" means, scope and non-goals, the
+  approach with key decisions and rationale, ordered steps naming real files and
+  symbols, risks, and a closing **verification** step that exercises the real
+  workflow (an end-to-end smoke, not just typecheck) — never a step like "make it
+  work". Every plan stands alone (no "this revision"/"as discussed" changelog
+  language); for abstract ideas, lead with one concrete snapshot before the dense
+  architecture. No marketing tone.
 
-See `references/html-template.md` for a copy-pasteable starting skeleton and
-`references/document-quality.md` for the written-plan quality bar.
+See `references/html-template.md` for the copy-pasteable template (the single
+source of truth for structure and the built-in features).
 
 ## Iterating On Feedback
 

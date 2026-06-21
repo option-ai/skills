@@ -1,0 +1,11 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Planning",
+      "description": "Interactive visual planning for coding agents — turn a text plan into a reviewable HTML artifact.",
+      "skills": ["visual-plan"]
+    }
+  ]
+}

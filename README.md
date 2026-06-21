@@ -1,51 +1,60 @@
-# /visual-plan
+# visual-plan
 
-Turn ordinary implementation plans into a rich, interactive, self-contained HTML
-review surface — instead of a flat wall of Markdown rendered in the terminal.
+A self-authored [Agent Skill](https://code.claude.com/docs/en/skills) that turns
+an ordinary text plan into a **rich, interactive, self-contained HTML document** —
+instead of a flat wall of Markdown in the terminal.
 
-`/visual-plan` takes the plan an agent would normally dump into chat and renders
-it as a single `.html` file the user opens in their browser: a sticky header with
-the outcome, a table-of-contents nav, collapsible sections, numbered step cards
-naming real files, inline SVG/CSS diagrams, annotated code and diffs, a file map,
-and an open-questions section with recommended defaults.
+**Live demo:** https://visual-plan-benchy-capture.abdulhdr1.workers.dev
 
-It solves for plans that are too important to bury in chat. The output is
-scannable and intuitive enough for a human to approve before code changes start.
+The agent writes one `.html` file (CSS + JS inlined, no build step) with:
 
-## How It Works
+- **Dark-first** Claude-style theme with a light toggle
+- **Diagrams** via Mermaid + a CSS brand-logo kit for architecture/network maps
+- **Rendered file trees** (collapsible folders, status pills), annotated code & diffs
+- **Anchored commenting** — select any text or a Mermaid node → "Comment this
+  section"; comments round-trip back to the agent for targeted edits
+- **Open-question answer chips** (recommended pre-selected) that export as decisions
+- A floating control dock, scroll-spy TOC, reading-progress bar, copy-code buttons,
+  image lightbox, print/PDF stylesheet, and a versioned feedback timeline
+- **One-command Cloudflare deploy** to a shareable URL (temporary account, no signup)
 
-- **Self-authored, zero dependencies.** The skill writes one HTML file with CSS
-  and any JS inlined — no MCP server, no hosted service, no CDN, no web fonts. It
-  opens correctly from a `file://` URL offline.
-- **Grounded in real code.** Plans name actual repo files, schemas, actions, and
-  symbols, and lead with reuse before additions.
-- **Right visual where it helps.** Diagrams are inline SVG or clean CSS layouts
-  (before/after panels, lanes, matrices) — no external diagram libraries.
-- **The plan is the approval gate.** The HTML is surfaced for review and sign-off
-  before any source edits begin.
+## Install
 
-## When To Use It
+**Via [skills.sh](https://skills.sh):**
+```bash
+npx skills add option-ai/visual-plan-skill
+```
 
-Use it for multi-file, ambiguous, risky, architecture-heavy, data-heavy, or
-UI-heavy work where the wrong direction would be expensive — plus modest work
-like a single UI surface with states or a component/API/data-shape decision that
-needs alignment. Skip it for trivial fixes whose diff is easier to review than a
-plan.
+**Via Claude Code plugins:**
+```
+/plugin marketplace add option-ai/visual-plan-skill
+/plugin install visual-plan
+```
 
-## Output
+**Manually:** copy `skills/visual-plan/` into your `~/.claude/skills/` directory
+(or `.claude/skills/` in a project).
 
-A single HTML file (default `/tmp/visual-plan-<slug>.html`, or `plans/<slug>.html`
-when the user wants it checked into the repo). By default nothing is uploaded —
-the file itself is shareable and check-in-able.
+## Use
 
-When the user wants a **hosted link**, the skill can deploy the HTML to Cloudflare
-Workers with a [temporary account](https://blog.cloudflare.com/temporary-accounts/)
-via `npx wrangler@latest deploy --temporary` — no Cloudflare signup, login, or API
-token needed up front. It returns a live URL plus a claim link that stays valid
-for 60 minutes.
+```
+/visual-plan <describe the change, or paste an existing plan>
+```
 
-## Files
+The agent researches the codebase, writes the HTML plan, deploys it to Cloudflare,
+and hands you the link. Review it, comment inline, copy the feedback back into chat,
+and iterate.
 
-- `SKILL.md` — the skill instructions and HTML authoring contract.
-- `references/html-template.md` — copy-pasteable self-contained HTML skeleton.
-- `references/document-quality.md` — the written-plan quality bar.
+## Layout
+
+```
+.claude-plugin/        plugin + marketplace manifests (Claude Code)
+skills/visual-plan/
+  SKILL.md             the skill instructions
+  references/
+    html-template.md   the copy-pasteable HTML template (source of truth)
+skills.sh.json         skills.sh directory metadata
+```
+
+## License
+
+MIT

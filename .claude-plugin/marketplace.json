@@ -1,0 +1,14 @@
+{
+  "name": "option-skills",
+  "owner": {
+    "name": "Option",
+    "url": "https://github.com/option-ai"
+  },
+  "plugins": [
+    {
+      "name": "visual-plan",
+      "source": "./",
+      "description": "Turn text plans into rich, interactive, self-contained HTML plans with diagrams, anchored commenting, and Cloudflare deploy."
+    }
+  ]
+}
