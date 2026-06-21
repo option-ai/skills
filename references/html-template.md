@@ -82,20 +82,41 @@ stable `data-anchor-id` + `data-anchor-label`.
   main { min-width: 0; }
   main > section { margin-bottom: 34px; scroll-margin-top: 24px; }
 
-  /* ===== Plan title row (replaces the header): title+outcome left, repo+date right ===== */
-  .plan-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;
-    margin: 6px 0 36px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
-  .plan-head .left { min-width: 0; }
-  .plan-head h1 { margin: 0; font-size: 25px; letter-spacing: -.01em; }
-  .plan-head .outcome { margin: 7px 0 0; color: var(--muted); font-size: 14px; }
-  .plan-head .right { text-align: right; flex: none; font-size: 13px; line-height: 1.5; }
-  .plan-head .right .repo { font-weight: 600; }
-  .plan-head .right .date { color: var(--muted); }
-  @media (max-width: 560px) { .plan-head { flex-direction: column; gap: 10px; } .plan-head .right { text-align: left; } }
+  /* ===== Plan header: metadata row on top, title, full-width description (no divider) ===== */
+  .plan-head { margin: 4px 0 32px; }
+  .plan-head .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 12.5px; color: var(--muted); margin-bottom: 13px; }
+  .plan-head .meta .m-item { display: inline-flex; align-items: center; gap: 5px; }
+  .plan-head .meta .m-item .icon { width: 14px; height: 14px; opacity: .8; }
+  .plan-head .meta a { color: var(--muted); text-decoration: none; }
+  .plan-head .meta a:hover { color: var(--accent); }
+  .plan-head h1 { margin: 0 0 10px; font-size: 26px; letter-spacing: -.012em; }
+  .plan-head .outcome { margin: 0; color: var(--fg); font-size: 15px; max-width: none; }
+  /* version badge + timeline popover */
+  .version { position: relative; }
+  .version > .vbtn { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; font: inherit; font-size: 12px;
+    color: var(--accent); background: var(--accent-soft); border: 0; border-radius: 999px; padding: 1px 9px; }
+  .version > .vbtn:hover { filter: brightness(1.08); }
+  .version-pop { position: absolute; top: 130%; left: 0; z-index: 40; min-width: 230px; background: var(--bg-elev);
+    border: 1px solid var(--line); border-radius: 11px; box-shadow: var(--shadow); padding: 6px; }
+  .version-pop[hidden] { display: none; }
+  .version-pop .vh { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 5px 9px; }
+  .version-pop .vrow { display: flex; align-items: baseline; gap: 8px; padding: 6px 9px; border-radius: 7px; text-decoration: none; color: var(--fg); font-size: 13px; }
+  .version-pop .vrow:hover { background: var(--card-2); }
+  .version-pop .vrow .vn { font-weight: 600; color: var(--accent); }
+  .version-pop .vrow .vd { color: var(--muted); font-size: 11.5px; margin-left: auto; }
+  .version-pop .vrow.current { background: var(--accent-soft); }
+
+  /* ===== Subtle badges (foglamp-style: small, low-contrast, dot/ghost — never loud pills) ===== */
+  .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; line-height: 1.6; border-radius: 999px;
+    padding: 0 8px; background: var(--card-2); color: var(--muted); border: 1px solid var(--line); }
+  .tag::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .9; }
+  .tag.ok { color: var(--add); } .tag.warn { color: var(--warn); } .tag.info { color: var(--accent); } .tag.risk { color: var(--del); }
 
   /* ===== Blocks ===== */
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
-  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin: 14px 0; }
+  /* JS sets --cols to a BALANCED count so the last row is never an orphan (4 -> 2x2) */
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); margin: 14px 0; }
+  @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
   .step { display: flex; gap: 13px; align-items: flex-start; margin: 12px 0; }
   .step .num { flex: none; width: 26px; height: 26px; border-radius: 8px; background: var(--accent-soft);
     color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 13px; border: 1px solid var(--accent-line); }
@@ -126,7 +147,7 @@ stable `data-anchor-id` + `data-anchor-label`.
     border: 1px solid var(--line-strong); border-radius: 7px; padding: 7px 12px; display: inline-flex; align-items: center; gap: 7px; }
   .qopt:hover { border-color: var(--accent); }
   .qopt.sel { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
-  .qopt .rec-tag { font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; opacity: .65; }
+  .qopt .rec-tag { font-size: 10px; opacity: .7; }
   .qa .q-other { margin-top: 9px; }
   .qa .q-other input { width: 100%; max-width: 380px; background: var(--card); color: var(--fg);
     border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; font: inherit; font-size: 13px; }
@@ -157,11 +178,16 @@ stable `data-anchor-id` + `data-anchor-label`.
   .filetree { font-size: 13.5px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-elev); padding: 14px 16px; }
   .filetree ul { margin-left: 9px; padding-left: 15px; border-left: 1px solid var(--line); }
   .filetree li { padding: 3px 0; }
-  .filetree li > span { display: inline-flex; align-items: center; gap: 7px; }
-  .tree-i { color: var(--muted); }
+  .filetree li > span { display: inline-flex; align-items: center; gap: 6px; border-radius: 5px; padding: 1px 4px; margin: -1px -4px; }
+  .filetree li:has(> ul) > span:hover, .filetree li:not(:has(> ul)) > span:hover { background: var(--card-2); }
+  .tree-i { color: var(--muted); flex: none; }
   .filetree li:has(> ul) > span > .tree-i { color: var(--accent); }
-  .tpill { font-size: 11px; padding: 0 6px; border-radius: 6px; border: 1px solid; line-height: 1.5; }
-  .tpill.new { color: var(--add); border-color: var(--add); } .tpill.edit { color: var(--warn); border-color: var(--warn); }
+  .tree-chev { width: 14px; height: 14px; color: var(--muted); transition: transform .12s; flex: none; }
+  .filetree li.collapsed > span > .tree-chev { transform: rotate(-90deg); }
+  .filetree li.collapsed > ul { display: none; }
+  .tpill { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; line-height: 1.7; padding: 0 7px; border-radius: 999px; background: var(--card-2); color: var(--muted); }
+  .tpill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .tpill.new { color: var(--add); } .tpill.edit { color: var(--warn); }
 
   /* ===== Dock — sizes to its buttons; expands upward into one surface ===== */
   .dock { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%) translateZ(0); z-index: 45;
@@ -229,8 +255,9 @@ stable `data-anchor-id` + `data-anchor-label`.
   body.assigning [data-anchor-id] { cursor: pointer; }
   body.assigning [data-anchor-id]:hover { outline: 1.5px solid var(--accent-line); outline-offset: 5px; }
   body.assigning .has-anno { outline: 1.5px solid var(--accent); outline-offset: 5px; }
-  .anno-badge { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; background: var(--accent);
-    color: var(--on-accent); border-radius: 11px; padding: 1px 8px; font-size: 12px; font-weight: 700; vertical-align: middle; }
+  .anno-badge { display: inline-flex; align-items: center; gap: 3px; margin-left: 8px; background: var(--accent-soft);
+    color: var(--accent); border-radius: 999px; padding: 0 8px; font-size: 11.5px; font-weight: 600; vertical-align: middle; }
+  .anno-badge .icon { width: 12px; height: 12px; }
   .anno-flash { animation: annoflash 1.3s ease; }
   @keyframes annoflash { 0%,100% { background: transparent; } 28% { background: var(--accent-soft); } }
   /* fine-grained text marks (CSS Custom Highlight API) */
@@ -282,6 +309,20 @@ stable `data-anchor-id` + `data-anchor-label`.
   .chat .msg .edit-ta { width: 100%; min-height: 52px; resize: vertical; background: var(--card); color: var(--fg);
     border: 1px solid var(--accent); border-radius: 7px; padding: 7px; font: inherit; font-size: 13px; margin-top: 4px; }
   .chat .msg .edit-row { display: flex; gap: 7px; justify-content: flex-end; margin-top: 6px; }
+  /* earlier / resolved feedback, tucked behind a disclosure so the active list stays clean */
+  .chat details.earlier { margin-top: 4px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .chat details.earlier > summary { cursor: pointer; font-size: 12px; color: var(--muted); list-style: none; }
+  .chat details.earlier > summary::-webkit-details-marker { display: none; }
+  .chat details.earlier > summary::before { content: "▸ "; }
+  .chat details.earlier[open] > summary::before { content: "▾ "; }
+  .chat details.earlier > div { margin-top: 10px; display: flex; flex-direction: column; gap: 14px; }
+  .chat .msg.resolved { opacity: .55; }
+  /* selection popover: "Comment this section" appears on any text selection / node click */
+  .sel-pop { position: fixed; z-index: 65; display: none; }
+  .sel-pop.show { display: block; }
+  .sel-pop button { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 12.5px; cursor: pointer;
+    background: var(--accent); color: var(--on-accent); border: 0; border-radius: 9px; padding: 6px 11px; box-shadow: var(--shadow); white-space: nowrap; }
+  .sel-pop button:hover { filter: brightness(1.06); }
   /* honor reduced-motion */
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -318,6 +359,10 @@ stable `data-anchor-id` + `data-anchor-label`.
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2"/></symbol>
   <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/></symbol>
+  <symbol id="i-branch" viewBox="0 0 24 24"><path d="M7 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M7 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M17 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M7 8v8"/><path d="M9 18h6a2 2 0 0 0 2 -2v-5"/><path d="M14 14l3 -3l3 3"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path d="M12 8l0 4l2 2"/><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M6 9l6 6l6 -6"/></symbol>
 </svg>
 
 <!-- ===== Brand logo sprite (Simple Icons, MIT, fill). Add more by copying exact SI paths. ===== -->
@@ -347,16 +392,25 @@ stable `data-anchor-id` + `data-anchor-label`.
   </nav>
 
   <main>
-    <!-- Title row (no header bar): title + outcome left, repo + date right. Agent fills repo/date. -->
+    <!-- Header: metadata row (repo · branch · date · version) on top, title, full-width outcome.
+         Agent fills repo URL, branch, date, version number, and the version-pop rows. -->
     <div class="plan-head">
-      <div class="left">
-        <h1>PLAN TITLE</h1>
-        <p class="outcome">One-line outcome: what is true when this is done.</p>
+      <div class="meta">
+        <span class="m-item"><svg class="icon"><use href="#b-github"/></svg> <a href="https://github.com/owner/repo">owner/repo</a></span>
+        <span class="m-item"><svg class="icon"><use href="#i-branch"/></svg> main</span>
+        <span class="m-item"><svg class="icon"><use href="#i-calendar"/></svg> 2026-06-21</span>
+        <span class="version">
+          <button class="vbtn" id="vBtn" type="button"><svg class="icon"><use href="#i-history"/></svg> v3 <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+          <div class="version-pop" id="versionPop" hidden>
+            <div class="vh">Plan versions</div>
+            <a class="vrow current" href="#"><span class="vn">v3</span> current <span class="vd">2026-06-21</span></a>
+            <a class="vrow" href="VERSION_2_URL"><span class="vn">v2</span> <span class="vd">2026-06-20</span></a>
+            <a class="vrow" href="VERSION_1_URL"><span class="vn">v1</span> <span class="vd">2026-06-19</span></a>
+          </div>
+        </span>
       </div>
-      <div class="right">
-        <div class="repo">owner/repo</div>
-        <div class="date">2026-06-20</div>
-      </div>
+      <h1>PLAN TITLE</h1>
+      <p class="outcome">One-line outcome: what is true when this is done — full width.</p>
     </div>
 
     <section id="overview" data-anchor-id="overview" data-anchor-label="Overview">
@@ -477,6 +531,9 @@ flowchart LR
   </div>
 </div>
 
+<!-- ===== Selection popover ("Comment this section") ===== -->
+<div class="sel-pop" id="selPop"><button type="button"><svg class="icon"><use href="#i-message"/></svg> Comment this section</button></div>
+
 <!-- ===== Image lightbox ===== -->
 <div class="vp-lightbox" id="vpLightbox"><img alt=""><div class="cap"></div></div>
 
@@ -541,6 +598,7 @@ flowchart LR
 <script>
 (function () {
   var PLAN = document.title.replace(/ — Visual Plan$/, '');
+  var PLAN_VERSION = parseInt(((document.getElementById('vBtn') || {}).textContent || '').replace(/[^\d]/g, ''), 10) || 1;
   var KEY = 'vp-comments::' + PLAN;
   var comments = [];
   try { comments = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) {}
@@ -581,14 +639,45 @@ flowchart LR
     }
   });
 
-  /* ---- File tree icons + pills ---- */
+  /* ---- File tree: icons, pills, collapsible folders, click-to-copy path ---- */
   document.querySelectorAll('.filetree li').forEach(function (li) {
     var span = li.querySelector(':scope > span'); if (!span) return;
     var folder = !!li.querySelector(':scope > ul');
+    if (folder) span.insertAdjacentHTML('afterbegin', '<svg class="icon tree-chev"><use href="#i-chevron-down"/></svg>');
     span.insertAdjacentHTML('afterbegin', '<svg class="icon tree-i"><use href="#' + (folder ? 'i-folder' : 'i-file') + '"/></svg>');
     if (li.hasAttribute('data-new')) span.insertAdjacentHTML('beforeend', ' <span class="tpill new">new</span>');
     if (li.hasAttribute('data-edit')) span.insertAdjacentHTML('beforeend', ' <span class="tpill edit">edit</span>');
+    if (folder) {
+      span.onclick = function () { li.classList.toggle('collapsed'); };
+    } else {
+      // build a path from ancestor folder labels and copy it on click
+      var parts = [], node = li;
+      while (node && node.tagName === 'LI') {
+        var ps = node.querySelector(':scope > span');
+        if (ps) { var t = ps.cloneNode(true); t.querySelectorAll('.tpill,.icon').forEach(function (n) { n.remove(); }); parts.unshift(t.textContent.trim()); }
+        node = node.parentElement ? node.parentElement.closest('li') : null;
+      }
+      var path = parts.join('/');
+      span.title = 'Click to copy path: ' + path;
+      span.style.cursor = 'copy';
+      span.onclick = function () { if (navigator.clipboard) navigator.clipboard.writeText(path).then(function () { toast('Copied ' + path); }); };
+    }
   });
+
+  /* ---- Auto-balance card grids so the last row is never an orphan (4 -> 2x2) ---- */
+  document.querySelectorAll('.grid').forEach(function (g) {
+    var n = g.children.length, cols;
+    if (n <= 1) cols = 1; else if (n <= 3) cols = n; else if (n === 4) cols = 2;
+    else { cols = Math.ceil(Math.sqrt(n)); if (n % cols !== 0 && n % 3 === 0) cols = 3; if (cols > 4) cols = 4; }
+    g.style.setProperty('--cols', cols);
+  });
+
+  /* ---- Version timeline popover ---- */
+  var vBtn = document.getElementById('vBtn'), vPop = document.getElementById('versionPop');
+  if (vBtn && vPop) {
+    vBtn.onclick = function (e) { e.stopPropagation(); vPop.hidden = !vPop.hidden; };
+    document.addEventListener('click', function (e) { if (!e.target.closest('.version')) vPop.hidden = true; });
+  }
 
   /* ---- Reading progress + scroll-spy TOC ---- */
   var progress = document.getElementById('vpProgress');
@@ -695,7 +784,7 @@ flowchart LR
     if (!HL) return;
     var ranges = [];
     comments.forEach(function (c) {
-      if (c.type !== 'text') return;
+      if (c.type !== 'text' || (c.resolved || (c.version != null && c.version < PLAN_VERSION))) return;
       var b = sel(c.anchorId); if (!b) return;
       var r = rangeFromOffsets(b, c.start, c.end); if (r) { c._range = r; ranges.push(r); }
     });
@@ -730,10 +819,11 @@ flowchart LR
   function toggleFeedback() {
     if (dock.classList.contains('open') && !dpFeedback.hidden) closeDock(); else openFeedback();
   }
-  function openComposer() {
-    if (composing()) { closeDock(); return; }
-    pending = null; genText.value = ''; setTarget(null);
-    showSection('compose'); refreshHighlights(null);
+  function openComposer(preset) {
+    if (composing() && !preset) { closeDock(); return; }
+    pending = null; genText.value = '';
+    showSection('compose');
+    setTarget(preset && preset.type ? preset : null);
     setTimeout(function () { genText.focus(); }, 60);
   }
   function setTarget(t) {
@@ -742,6 +832,7 @@ flowchart LR
     chip.classList.toggle('pinned', !!t); clr.hidden = !t;
     if (!t) { label.textContent = 'Whole plan'; ic.setAttribute('href', '#i-file'); refreshHighlights(null); }
     else if (t.type === 'block') { label.textContent = t.anchorLabel; ic.setAttribute('href', '#i-message'); refreshHighlights(null); }
+    else if (t.type === 'node') { label.textContent = t.anchorLabel + ' · “' + (t.quote || '').slice(0, 40) + '”'; ic.setAttribute('href', '#i-message'); refreshHighlights(null); }
     else { label.textContent = '“' + t.quote.slice(0, 48) + (t.quote.length > 48 ? '…' : '') + '”'; ic.setAttribute('href', '#i-message'); refreshHighlights(t._range); }
   }
   function saveComposer() {
@@ -749,10 +840,12 @@ flowchart LR
     var c = { body: b, ts: new Date().toISOString() };
     if (!pending) { c.type = 'general'; c.anchorId = '__general__'; c.anchorLabel = 'General'; c.quote = ''; }
     else if (pending.type === 'block') { c.type = 'block'; c.anchorId = pending.anchorId; c.anchorLabel = pending.anchorLabel; c.quote = ''; }
+    else if (pending.type === 'node') { c.type = 'node'; c.anchorId = pending.anchorId; c.anchorLabel = pending.anchorLabel; c.quote = pending.quote; }
     else { c.type = 'text'; c.anchorId = pending.anchorId; c.anchorLabel = pending.anchorLabel; c.quote = pending.quote; c.start = pending.start; c.end = pending.end; }
+    c.version = PLAN_VERSION;
     comments.push(c); save(); pending = null; genText.value = ''; openFeedback();
   }
-  cmtBtn.onclick = openComposer;
+  cmtBtn.onclick = function () { openComposer(); };
   fbBtn.onclick = toggleFeedback;
   document.getElementById('dpClose').onclick = closeDock;
   document.getElementById('cCancel').onclick = closeDock;
@@ -760,42 +853,71 @@ flowchart LR
   document.querySelector('#cTarget .tclear').onclick = function () { setTarget(null); genText.focus(); };
   genText.onkeydown = function (e) { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') saveComposer(); };
 
-  /* assign a target by clicking a block or selecting text while composing */
-  document.addEventListener('mouseup', function (e) {
-    if (!composing() || e.target.closest('.dock,.kbd-help')) return;
+  /* ---- Build a text target from the current selection (used by compose-mode + sel-pop) ---- */
+  function selectionTarget() {
     var s = window.getSelection ? window.getSelection() : null;
-    if (s && !s.isCollapsed && s.rangeCount) {
-      var range = s.getRangeAt(0), host = range.commonAncestorContainer;
-      host = (host.nodeType === 1 ? host : host.parentElement);
-      var block = host && host.closest('[data-anchor-id]');
-      if (block) {
-        var offs = offsetsOf(block, range), quote = String(s).replace(/\s+/g, ' ').trim();
-        if (offs && quote) {
-          var saved = rangeFromOffsets(block, offs.start, offs.end);
-          setTarget({ type: 'text', anchorId: block.getAttribute('data-anchor-id'), anchorLabel: block.getAttribute('data-anchor-label'),
-            quote: quote.slice(0, 160), start: offs.start, end: offs.end, _range: saved });
-          s.removeAllRanges(); genText.focus(); toast('Pinned to selection'); return;
-        }
-      }
+    if (!s || s.isCollapsed || !s.rangeCount) return null;
+    var range = s.getRangeAt(0), host = range.commonAncestorContainer;
+    host = (host.nodeType === 1 ? host : host.parentElement);
+    var block = host && host.closest('[data-anchor-id]');
+    if (!block) return null;
+    var offs = offsetsOf(block, range), quote = String(s).replace(/\s+/g, ' ').trim();
+    if (!offs || !quote) return null;
+    return { type: 'text', anchorId: block.getAttribute('data-anchor-id'), anchorLabel: block.getAttribute('data-anchor-label'),
+      quote: quote.slice(0, 160), start: offs.start, end: offs.end, _range: rangeFromOffsets(block, offs.start, offs.end), _rect: range.getBoundingClientRect() };
+  }
+
+  /* ---- Selection popover: select any text -> "Comment this section" ---- */
+  var selPop = document.getElementById('selPop'), selTarget = null;
+  function showSelPop(t) {
+    selTarget = t; var r = t._rect;
+    selPop.style.left = Math.max(8, Math.min(r.left + r.width / 2 - 95, window.innerWidth - 210)) + 'px';
+    selPop.style.top = Math.max(8, r.top - 46) + 'px';
+    selPop.classList.add('show');
+  }
+  function hideSelPop() { selPop.classList.remove('show'); selTarget = null; }
+  selPop.querySelector('button').onmousedown = function (e) { e.preventDefault(); };
+  selPop.querySelector('button').onclick = function (e) {
+    e.stopPropagation(); var t = selTarget; hideSelPop();
+    if (window.getSelection) window.getSelection().removeAllRanges();
+    if (t) openComposer(t);
+  };
+  window.addEventListener('scroll', hideSelPop, { passive: true });
+
+  /* assign a target while composing; otherwise offer the sel-pop */
+  document.addEventListener('mouseup', function (e) {
+    if (e.target.closest('.dock,.kbd-help,.sel-pop')) return;
+    if (composing()) {
+      var t = selectionTarget();
+      if (t) { setTarget(t); window.getSelection().removeAllRanges(); genText.focus(); toast('Pinned to selection'); return; }
+      if (e.target.closest('a, button, summary, input, textarea')) return;
+      var blk = e.target.closest('[data-anchor-id]');
+      if (blk) { setTarget({ type: 'block', anchorId: blk.getAttribute('data-anchor-id'), anchorLabel: blk.getAttribute('data-anchor-label') }); genText.focus(); toast('Pinned to ' + blk.getAttribute('data-anchor-label')); }
+      return;
     }
-    if (e.target.closest('a, button, summary, input, textarea')) return;
-    var blk = e.target.closest('[data-anchor-id]');
-    if (blk) { setTarget({ type: 'block', anchorId: blk.getAttribute('data-anchor-id'), anchorLabel: blk.getAttribute('data-anchor-label') }); genText.focus(); toast('Pinned to ' + blk.getAttribute('data-anchor-label')); }
+    setTimeout(function () { var st = selectionTarget(); if (st) showSelPop(st); else hideSelPop(); }, 0);
   });
 
-  /* ---- Click a marked text span -> open its comment (marks are paint-only, so hit-test) ---- */
+  /* ---- Click a Mermaid node -> comment on it; click a marked span -> open its comment ---- */
   document.addEventListener('click', function (e) {
-    if (composing() || e.target.closest('.dock,.kbd-help,.vp-lightbox')) return;
+    if (composing() || e.target.closest('.dock,.kbd-help,.vp-lightbox,.sel-pop,.version')) return;
+    var node = e.target.closest('.mermaid g.node, .mermaid .node, .mermaid .nodeLabel');
+    if (node) {
+      var dblock = node.closest('[data-anchor-id]'); if (dblock) {
+        var ntext = (node.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+        var nr = node.getBoundingClientRect();
+        showSelPop({ type: 'node', anchorId: dblock.getAttribute('data-anchor-id'), anchorLabel: dblock.getAttribute('data-anchor-label'),
+          quote: ntext, _rect: nr });
+        return;
+      }
+    }
     var x = e.clientX, y = e.clientY, hit = null;
     comments.forEach(function (c) {
-      if (hit || c.type !== 'text') return;
+      if (hit || c.type !== 'text' || c.resolved || (c.version != null && c.version < PLAN_VERSION)) return;
       var b = sel(c.anchorId); if (!b) return;
       var r = c._range || rangeFromOffsets(b, c.start, c.end); if (!r) return;
       var rects = r.getClientRects();
-      for (var i = 0; i < rects.length; i++) {
-        var box = rects[i];
-        if (x >= box.left && x <= box.right && y >= box.top && y <= box.bottom) { hit = c; break; }
-      }
+      for (var i = 0; i < rects.length; i++) { var box = rects[i]; if (x >= box.left && x <= box.right && y >= box.top && y <= box.bottom) { hit = c; break; } }
     });
     if (hit) { openFeedback(); flashChat(hit); }
   });
@@ -810,15 +932,44 @@ flowchart LR
     return Math.round(diff / 86400) + 'd ago';
   }
   function flashChat(c) {
-    var i = comments.indexOf(c); if (i < 0) return;
-    var node = document.querySelectorAll('#annoList .msg')[i];
+    if (c.resolved) return;
+    var node = document.querySelector('#annoList .msg[data-ci="' + comments.indexOf(c) + '"]');
     if (node) { node.scrollIntoView({ behavior: 'smooth', block: 'center' }); node.classList.add('anno-flash'); setTimeout(function () { node.classList.remove('anno-flash'); }, 1300); }
+  }
+  /* a comment is "earlier" once it's resolved or was made against an older plan version */
+  function isEarlier(c) { return !!c.resolved || (c.version != null && c.version < PLAN_VERSION); }
+  function msgLabel(c) {
+    if (c.type === 'general' || c.anchorId === '__general__') return 'Whole plan';
+    return c.anchorLabel + (c.type === 'text' ? ' · text' : c.type === 'node' ? ' · node' : '');
+  }
+  function buildMsg(c, listEl, earlier) {
+    var gen = c.type === 'general' || c.anchorId === '__general__';
+    var d = document.createElement('div'); d.className = 'msg' + (gen ? ' general' : '') + (earlier ? ' resolved' : '');
+    d.setAttribute('data-ci', comments.indexOf(c));
+    var acts = earlier
+      ? '<button class="restore-c" title="Restore">&#8634;</button><button class="del-c" title="Delete">&times;</button>'
+      : '<button class="edit-c" title="Edit">&#9998;</button><button class="resolve-c" title="Mark resolved">&#10003;</button><button class="del-c" title="Delete">&times;</button>';
+    d.innerHTML = '<span class="acts">' + acts + '</span>' +
+      '<div class="lbl">' + esc(msgLabel(c)) + '</div>' +
+      (c.quote ? '<div class="quote">“' + esc(c.quote) + '”</div>' : '') +
+      '<div class="body">' + esc(c.body) + '</div>' +
+      '<div class="meta">' + esc(timeAgo(c.ts)) + (c.version && c.version < PLAN_VERSION ? ' · v' + c.version : '') + (c.edited ? ' · edited' : '') + '</div>';
+    if (!gen) d.querySelector('.lbl').onclick = function () { jumpTo(c); };
+    d.querySelector('.del-c').onclick = function () { var ix = comments.indexOf(c); if (ix >= 0) { comments.splice(ix, 1); save(); render(); } };
+    if (earlier) d.querySelector('.restore-c').onclick = function () { c.resolved = false; c.version = PLAN_VERSION; save(); render(); };
+    else {
+      d.querySelector('.edit-c').onclick = function () { startEdit(d, c); };
+      d.querySelector('.resolve-c').onclick = function () { c.resolved = true; save(); render(); };
+    }
+    listEl.appendChild(d);
   }
   function render() {
     document.querySelectorAll('.anno-badge').forEach(function (n) { n.remove(); });
     document.querySelectorAll('.has-anno').forEach(function (n) { n.classList.remove('has-anno'); });
+    var active = comments.filter(function (c) { return !isEarlier(c); });
+    var earlier = comments.filter(isEarlier);
     var byId = {};
-    comments.forEach(function (c) { if (c.anchorId && c.anchorId !== '__general__') (byId[c.anchorId] = byId[c.anchorId] || []).push(c); });
+    active.forEach(function (c) { if (c.anchorId && c.anchorId !== '__general__') (byId[c.anchorId] = byId[c.anchorId] || []).push(c); });
     Object.keys(byId).forEach(function (id) {
       var el = sel(id); if (!el) return;
       el.classList.add('has-anno');
@@ -826,26 +977,19 @@ flowchart LR
       badge.innerHTML = '<svg class="icon"><use href="#i-message"/></svg>' + byId[id].length;
       (el.querySelector('h2, summary, strong') || el).appendChild(badge);
     });
-    document.getElementById('annoCount').textContent = comments.length || '';
-    var c2 = document.getElementById('annoCount2'); if (c2) c2.textContent = comments.length ? '(' + comments.length + ')' : '';
-    var list = document.getElementById('annoList');
-    if (!comments.length) { list.innerHTML = '<p class="empty">No comments yet. Press <b>c</b>, type, then click a section or select text to pin it — or just save for the whole plan.</p>'; refreshHighlights(null); return; }
-    list.innerHTML = '';
-    comments.forEach(function (c, i) {
-      var gen = c.type === 'general' || c.anchorId === '__general__';
-      var d = document.createElement('div'); d.className = 'msg' + (gen ? ' general' : '');
-      var label = gen ? 'Whole plan' : (c.anchorLabel + (c.type === 'text' ? ' · text' : ''));
-      d.innerHTML = '<span class="acts"><button class="edit-c" title="Edit">&#9998;</button>' +
-          '<button class="del-c" title="Delete">&times;</button></span>' +
-        '<div class="lbl">' + esc(label) + '</div>' +
-        (c.quote ? '<div class="quote">“' + esc(c.quote) + '”</div>' : '') +
-        '<div class="body">' + esc(c.body) + '</div>' +
-        '<div class="meta">' + esc(timeAgo(c.ts)) + (c.edited ? ' · edited' : '') + '</div>';
-      if (!gen) d.querySelector('.lbl').onclick = function () { jumpTo(c); };
-      d.querySelector('.del-c').onclick = function () { comments.splice(i, 1); save(); render(); };
-      d.querySelector('.edit-c').onclick = function () { startEdit(d, c); };
-      list.appendChild(d);
-    });
+    document.getElementById('annoCount').textContent = active.length || '';
+    var c2 = document.getElementById('annoCount2'); if (c2) c2.textContent = active.length ? '(' + active.length + ')' : '';
+    var list = document.getElementById('annoList'); list.innerHTML = '';
+    if (!active.length && !earlier.length) { list.innerHTML = '<p class="empty">No comments yet. Press <b>c</b> or select text, then pin it — or just save for the whole plan.</p>'; refreshHighlights(null); return; }
+    if (!active.length) list.insertAdjacentHTML('beforeend', '<p class="empty">No open comments — see earlier below.</p>');
+    active.forEach(function (c) { buildMsg(c, list, false); });
+    if (earlier.length) {
+      var det = document.createElement('details'); det.className = 'earlier';
+      det.innerHTML = '<summary>Earlier / resolved (' + earlier.length + ')</summary>';
+      var sub = document.createElement('div'); det.appendChild(sub);
+      earlier.forEach(function (c) { buildMsg(c, sub, true); });
+      list.appendChild(det);
+    }
     refreshHighlights(null);
   }
   function startEdit(node, c) {
@@ -878,16 +1022,17 @@ flowchart LR
   }
   function hasFeedback() { return comments.length > 0 || Object.keys(answers).length > 0; }
   function payload() {
-    var out = '# Plan feedback: ' + PLAN + '\n';
+    var out = '# Plan feedback: ' + PLAN + ' (v' + PLAN_VERSION + ')\n';
     var ids = Object.keys(answers).filter(function (k) { return answers[k] && answers[k].answer; });
     if (ids.length) {
       out += '\n## Decisions (Open Questions)\n' + ids.map(function (k) {
         return '- ' + (answers[k].question || k) + ' → ' + answers[k].answer;
       }).join('\n') + '\n';
     }
-    if (comments.length) {
-      out += '\n## Comments\n' + comments.map(function (c, i) {
-        var head = c.anchorId === '__general__' ? '[general]' : '[anchor-id: ' + c.anchorId + '] (' + c.anchorLabel + ')';
+    var active = comments.filter(function (c) { return !isEarlier(c); });  // drop resolved / older-version
+    if (active.length) {
+      out += '\n## Comments\n' + active.map(function (c, i) {
+        var head = c.anchorId === '__general__' ? '[general]' : '[anchor-id: ' + c.anchorId + '] (' + c.anchorLabel + ')' + (c.type === 'node' ? ' [node]' : '');
         return (i + 1) + '. ' + head + (c.quote ? '\n   quote: "' + c.quote + '"' : '') + '\n   comment: ' + c.body;
       }).join('\n\n') + '\n';
     }
@@ -965,6 +1110,16 @@ flowchart LR
   Mark the recommended option `data-rec` — it's **pre-selected by default** so the
   user approves by exception. Selections persist and export under "Decisions". Don't
   fall back to plain "Recommended default: …" prose.
+- **Header metadata + version:** fill `.meta` from git — repo URL + `owner/repo`,
+  current branch, today's date — and set the version `vN` in the `#vBtn`. Fill the
+  `#versionPop` rows with each prior version (`vN` · date · its deployed URL); the
+  newest is `current`. Bump `vN` on each materially-new revision.
+- **Commenting is automatic:** selecting any text shows "Comment this section";
+  clicking a Mermaid node comments on that node. Don't add your own comment buttons.
+- **Badges are subtle by design** (`.tag`, `.tpill`, `.anno-badge`, version pill) —
+  small, low-contrast, dot/ghost style. Don't restyle them into loud filled pills.
+- **Card grids auto-balance:** put cards in `.grid`; JS picks the column count so
+  the last row isn't an orphan (4 → 2×2). Use `.grid` (not `.dlayer`) for card sets.
 - **Callouts carry a tone:** default is warn; add `.ok` (green), `.info` (accent),
   or `.risk` (red). Squared corners — don't round them.
 - **Images get a free lightbox.** Any `<img>` inside `main` is zoomable (click →

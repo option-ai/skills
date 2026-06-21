@@ -70,15 +70,20 @@ and never ship a single-step plan.
 1. Gather context: inspect the codebase, delegate wide exploration when useful,
    and ask native clarifying questions only when truly needed. If a source plan
    exists, use its exact text — don't invent source text.
-2. Write a single self-contained HTML file to disk. Default location:
-   `/tmp/visual-plan-<slug>.html` (or a repo-local path like
-   `plans/<slug>.html` if the user wants it checked in). Follow the **HTML
-   Authoring Contract** below.
-3. Open it for the user. On macOS run `open <path>`; otherwise print the
-   `file://` path. Always print the path in chat so a text-only host still has a
-   click target.
-4. Ask the user to review and approve. Iterate by editing the same HTML file in
-   place (don't regenerate from scratch and lose sections).
+2. Write a single self-contained HTML file. Keep versions: write to
+   `plans/<slug>/v<N>.html` (start at `v1`; bump `N` every time you regenerate so
+   prior versions are never overwritten). Follow the **HTML Authoring Contract**.
+   Fill the header metadata from git: repo (`git remote get-url origin`), branch
+   (`git rev-parse --abbrev-ref HEAD`), today's date, and the version `vN`; list
+   prior versions (with dates + their deployed URLs) in the version-timeline popover.
+3. **Always deploy to Cloudflare** (see **Deploying The Plan To Cloudflare**) and
+   give the user the live URL — this is the default handoff, not an opt-in. Also
+   `open` the local file on macOS as a convenience. (Skip the deploy only if the
+   user explicitly says local-only, or the plan covers private/unreleased work and
+   they decline a public URL.)
+4. Ask the user to review and approve. Iterate by editing the file; for a
+   materially new revision, bump to the next `vN`, re-deploy, and add the prior
+   version to the timeline so every version stays reachable.
 5. For high-stakes plans (architecture, backend, data, multi-file, risky), run a
    quick adversarial self-review of the *written plan* (not a re-research):
    spawn one skeptical reviewer to find weak/missing/wrong parts — unanchored
@@ -129,10 +134,13 @@ Required structure and behavior:
   missing, add it by copying the exact Simple Icons path — never hand-draw or
   approximate a logo (a wrong logo is worse than none; fall back to a neutral
   badge + name only when no real logo is available).
-- **No header bar — a title row instead.** Don't render a sticky header. At the
-  top of the body put a title row: the plan name (h1) and one-line outcome on the
-  **left**, and the **repository and date on the right** (you fill the real repo
-  and today's date), aligned with space-between. Stacks on very narrow screens.
+- **No header bar — a stacked header.** Don't render a sticky header. At the top
+  of the body: a **metadata row** (repo link · branch · date · version badge),
+  then the plan name (h1), then the one-line outcome **full width** below — no
+  divider line. Fill the metadata from git: repo URL, current branch, today's
+  date, and the version `vN`. The version badge opens a **timeline popover** — fill
+  its rows with each prior version (`vN` · date · deployed URL) so every version is
+  reachable from the latest.
 - **The plan is centered in the window; the TOC floats left, out of flow.** The
   body column is centered in the viewport (`margin: 0 auto`). The table-of-contents
   nav is positioned **absolutely/fixed to the left** so it does not occupy layout
@@ -168,10 +176,19 @@ Required structure and behavior:
   rounded. Use real `<img>` for screenshots (they get a click-to-zoom lightbox;
   add `data-caption`), not prose descriptions.
 - **Reader QOL is built into the template — don't reinvent it.** Scroll-spy TOC,
-  a reading-progress bar, copy-code buttons, the image lightbox, clickable text
-  marks (click a highlight → its comment), comment editing + relative timestamps,
-  `prefers-reduced-motion`, and a print/PDF stylesheet all ship in the template.
-  Author content; the plumbing is automatic.
+  reading-progress bar, copy-code buttons, image lightbox, clickable text marks,
+  comment editing + relative timestamps, `prefers-reduced-motion`, print/PDF
+  stylesheet, **auto-balanced card grids** (`.grid` columns are computed so the
+  last row is never an orphan — 4 cards → 2×2), the **"Comment this section"
+  selection popover** (select any text or click a Mermaid node → comment pinned to
+  it), and **subtle badges** (small, low-contrast — never loud filled pills) all
+  ship in the template. Author content; the plumbing is automatic.
+- **Feedback is versioned, not appended forever.** Comments are tagged with the
+  plan version. When you bump to a new `vN` and re-deploy, prior-version (and
+  resolved) comments auto-tuck into an "Earlier / resolved" disclosure so the
+  active list only shows feedback for the current version; the copied feedback
+  payload likewise emits only the active comments (plus Decisions). Reviewers can
+  resolve/restore individual comments.
 - **File map / tree as a rendered tree, never plain monospace text.** Use the
   template's file-tree renderer: a nested `<ul class="filetree">` with folder/file
   Tabler icons, indent guide lines, and `data-new`/`data-edit` status pills — so it
@@ -266,23 +283,24 @@ When the user comments, edit the existing HTML file in place with targeted edits
 or tell the user to refresh. When scope shifts, update the HTML (the document is
 the source of truth, not the chat) and keep it standalone.
 
-## Deploying The Plan To Cloudflare (Shareable Link)
+## Deploying The Plan To Cloudflare (default handoff)
 
-By default the plan is a local file. When the user wants a **shareable link** —
-to send the plan to a teammate, review it on another device, or get a public URL
-— deploy the single HTML file to Cloudflare Workers using a **temporary account**,
+**Always deploy** the finished plan to Cloudflare Workers and hand the user the
+live URL — it's the primary handoff, not an opt-in. Use a **temporary account**,
 which needs no Cloudflare signup, login, OAuth, or API token up front. See
 <https://blog.cloudflare.com/temporary-accounts/>.
 
-Offer this only when sharing is wanted; for solo local review, the `file://` path
-is enough. Deploying publishes the plan to the public internet at a hard-to-guess
-URL — confirm with the user first if the plan covers private or unreleased work.
+Deploying publishes the plan to the public internet at a hard-to-guess URL. Skip
+the deploy only if the user explicitly asks for local-only, or the plan covers
+private/unreleased work and they decline a public URL. Each version (`vN`) gets
+its own deploy/URL; keep the prior URLs in the plan's version-timeline popover so
+every version stays reachable.
 
 Steps:
 
 1. Put the plan HTML in its own directory as `index.html`, e.g.
-   `/tmp/visual-plan-<slug>/index.html` (a Worker assets deploy serves a
-   directory, so move/copy the file there and name it `index.html`).
+   `plans/<slug>/index.html` (a Worker assets deploy serves a directory, so
+   copy the current `vN.html` there as `index.html`).
 2. Write a minimal `wrangler.jsonc` next to it that serves the directory as
    static assets — no Worker script needed:
 
