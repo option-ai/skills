@@ -167,8 +167,12 @@ Required structure and behavior:
   template's file-tree renderer: a nested `<ul class="filetree">` with folder/file
   Tabler icons, indent guide lines, and `data-new`/`data-edit` status pills — so it
   reads like an IDE explorer, not a code block.
-- **Open Questions** section near the bottom: each question with a recommended
-  default so the user can approve by exception.
+- **Open Questions as answerable chips.** Near the bottom, render each open
+  question as selectable **answer buttons** (`.qa` / `.qopt`), one option per real
+  choice, with the recommended option marked `data-rec` and **pre-selected by
+  default** so the user approves by exception (plus an optional write-in). The
+  user's picks persist and round-trip to the agent under a "Decisions" section in
+  the copied feedback. Don't use plain "Recommended default: …" prose.
 - **Annotation / feedback feature (required on every plan).** The reviewer must be
   able to comment on any part of the plan, and each comment must be anchored so
   the agent knows exactly what it points at. Implement per the **Annotation
@@ -218,12 +222,13 @@ Required structure and behavior:
   (grow/fade), not snap.
 - **Persistence.** Store comments in `localStorage` keyed by the plan title so they
   survive reload. No backend, no network.
-- **Round-trip to the agent.** The dock copy button (and `⌘/Ctrl+C`) serializes
-  all comments to the clipboard as a compact, agent-readable block — each entry as
-  `[anchor-id: …] (label)` for block/text targets (text targets also carry the
-  `quote` of the marked span) or `[general]` for whole-plan notes, plus the comment
-  body. The user pastes it back; the agent uses the anchor id (and quote for text)
-  to locate each comment and applies targeted edits. Offer a "Download feedback"
+- **Round-trip to the agent.** The dock copy button (and `⌘/Ctrl+C`) serializes a
+  compact, agent-readable block with two sections: **Decisions** (the chosen Open
+  Questions answers — `question → answer`) and **Comments** (each as `[anchor-id: …]
+  (label)` for block/text targets, text targets also carrying the `quote` of the
+  marked span, or `[general]` for whole-plan notes, plus the body). The user pastes
+  it back; the agent applies the decisions and uses the anchor id (and quote for
+  text) to locate each comment for targeted edits. Offer a "Download feedback"
   fallback saving the same payload as a `.md` file.
 - When the user pastes feedback back, treat the `anchor-id` (and quoted span for
   text comments) as the source of truth for *where* each comment belongs, address
@@ -233,6 +238,10 @@ Quality bar:
 
 - Real content over chrome. Don't add tabs, canvases, or animations that don't
   earn their place. Visual where visuals help; structured where structure helps.
+- **Avoid the over-styled "AI" look.** Don't wrap every block in a rounded,
+  accent-tinted, colored-border card. Callouts are squared (no rounding); reserve
+  tints and rounding, keep borders restrained, and let typography and spacing carry
+  the hierarchy.
 - Self-contained and robust: opening the file twice, or from any directory, must
   work identically.
 - Keep the prose at the quality of a serious technical plan — outcome-first,

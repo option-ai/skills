@@ -111,11 +111,26 @@ stable `data-anchor-id` + `data-anchor-label`.
   .filelabel { font-size: 12px; color: var(--muted); margin: 10px 0 -4px; display: flex; align-items: center; gap: 6px; }
   .diff .add { background: var(--add-bg); color: var(--add); display: block; margin: 0 -13px; padding: 0 13px; }
   .diff .del { background: var(--del-bg); color: var(--del); display: block; margin: 0 -13px; padding: 0 13px; }
-  .callout { border-left: 3px solid var(--warn); background: var(--warn-bg); padding: 11px 15px; border-radius: 0 8px 8px 0; }
+  /* squared off (no rounding) — cleaner, less "AI card" */
+  .callout { border-left: 3px solid var(--warn); background: var(--warn-bg); padding: 11px 15px; border-radius: 0; }
   table { border-collapse: collapse; width: 100%; font-size: 14px; }
   th, td { border: 1px solid var(--line); padding: 7px 11px; text-align: left; }
   th { background: var(--card-2); }
-  .q .rec { color: var(--add); font-weight: 600; }
+
+  /* ===== Open questions — answer chips, recommended pre-selected ===== */
+  .qa { margin: 16px 0; }
+  .qa + .qa { padding-top: 16px; border-top: 1px solid var(--line); }
+  .qa .q-text { font-weight: 600; margin-bottom: 9px; }
+  .qa .q-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .qopt { font: inherit; font-size: 13px; cursor: pointer; background: var(--card); color: var(--fg);
+    border: 1px solid var(--line-strong); border-radius: 7px; padding: 7px 12px; display: inline-flex; align-items: center; gap: 7px; }
+  .qopt:hover { border-color: var(--accent); }
+  .qopt.sel { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .qopt .rec-tag { font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; opacity: .65; }
+  .qa .q-other { margin-top: 9px; }
+  .qa .q-other input { width: 100%; max-width: 380px; background: var(--card); color: var(--fg);
+    border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; font: inherit; font-size: 13px; }
+  .qa .q-other input:focus { outline: none; border-color: var(--accent); }
 
   /* ===== Mermaid ===== */
   /* color:transparent hides the raw source until JS renders the SVG (or a fallback); no flash */
@@ -353,10 +368,19 @@ flowchart LR
       </ul>
     </section>
 
+    <!-- Open questions as answerable chips: one option per real choice, mark the
+         recommended one [data-rec] (it's pre-selected). Answers export as Decisions. -->
     <section id="questions" data-anchor-id="questions" data-anchor-label="Open questions">
       <h2>Open questions</h2>
-      <div class="q"><p><strong>Q:</strong> the decision still open.</p>
-        <p class="rec">Recommended default: …</p></div>
+      <div class="qa" data-qid="wire-format" data-q="Which wire format for the public API?">
+        <div class="q-text">Which wire format should the public API use?</div>
+        <div class="q-opts">
+          <button class="qopt" data-rec type="button">JSON <span class="rec-tag">recommended</span></button>
+          <button class="qopt" type="button">Protobuf</button>
+          <button class="qopt" type="button">MessagePack</button>
+        </div>
+        <div class="q-other"><input type="text" placeholder="Other / notes…"></div>
+      </div>
     </section>
   </main>
 </div>
@@ -459,8 +483,41 @@ flowchart LR
   var comments = [];
   try { comments = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) {}
   var save = function () { try { localStorage.setItem(KEY, JSON.stringify(comments)); } catch (e) {} };
+  var AKEY = 'vp-answers::' + PLAN;
+  var answers = {};
+  try { answers = JSON.parse(localStorage.getItem(AKEY)) || {}; } catch (e) {}
+  var saveAnswers = function () { try { localStorage.setItem(AKEY, JSON.stringify(answers)); } catch (e) {} };
   var sel = function (id) { return document.querySelector('[data-anchor-id="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]'); };
   var esc = function (s) { return (s || '').replace(/[&<>]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]; }); };
+
+  /* ---- Open questions: answer chips, recommended pre-selected, persisted, exported ---- */
+  document.querySelectorAll('.qa').forEach(function (qa) {
+    var qid = qa.getAttribute('data-qid') || (qa.querySelector('.q-text') || {}).textContent || '';
+    var qtext = qa.getAttribute('data-q') || (qa.querySelector('.q-text') || {}).textContent || qid;
+    var opts = [].slice.call(qa.querySelectorAll('.qopt'));
+    var other = qa.querySelector('.q-other input');
+    opts.forEach(function (o) { if (!o.getAttribute('data-val')) o.setAttribute('data-val', (o.childNodes[0] && o.childNodes[0].textContent || o.textContent).trim()); });
+    function pick(val, isOther) {
+      opts.forEach(function (o) { o.classList.toggle('sel', !isOther && o.getAttribute('data-val') === val); });
+      if (other && !isOther) other.value = '';
+      answers[qid] = { question: qtext, answer: val };
+      saveAnswers();
+    }
+    opts.forEach(function (o) { o.onclick = function () { pick(o.getAttribute('data-val'), false); }; });
+    if (other) other.oninput = function () {
+      var v = other.value.trim();
+      if (v) { opts.forEach(function (o) { o.classList.remove('sel'); }); answers[qid] = { question: qtext, answer: v }; saveAnswers(); }
+    };
+    var stored = answers[qid];
+    if (stored && stored.answer) {
+      var match = opts.filter(function (o) { return o.getAttribute('data-val') === stored.answer; })[0];
+      if (match) pick(stored.answer, false);
+      else if (other) { other.value = stored.answer; }
+    } else {
+      var rec = qa.querySelector('.qopt[data-rec]');
+      if (rec) pick(rec.getAttribute('data-val'), false);
+    }
+  });
 
   /* ---- File tree icons + pills ---- */
   document.querySelectorAll('.filetree li').forEach(function (li) {
@@ -666,14 +723,25 @@ flowchart LR
     var t = document.createElement('div'); t.className = 'vp-toast'; t.textContent = msg;
     document.body.appendChild(t); setTimeout(function () { t.remove(); }, 1500);
   }
+  function hasFeedback() { return comments.length > 0 || Object.keys(answers).length > 0; }
   function payload() {
-    return '# Plan feedback: ' + PLAN + '\n\n' + comments.map(function (c, i) {
-      var head = c.anchorId === '__general__' ? '[general]' : '[anchor-id: ' + c.anchorId + '] (' + c.anchorLabel + ')';
-      return (i + 1) + '. ' + head + (c.quote ? '\n   quote: "' + c.quote + '"' : '') + '\n   comment: ' + c.body;
-    }).join('\n\n');
+    var out = '# Plan feedback: ' + PLAN + '\n';
+    var ids = Object.keys(answers).filter(function (k) { return answers[k] && answers[k].answer; });
+    if (ids.length) {
+      out += '\n## Decisions (Open Questions)\n' + ids.map(function (k) {
+        return '- ' + (answers[k].question || k) + ' → ' + answers[k].answer;
+      }).join('\n') + '\n';
+    }
+    if (comments.length) {
+      out += '\n## Comments\n' + comments.map(function (c, i) {
+        var head = c.anchorId === '__general__' ? '[general]' : '[anchor-id: ' + c.anchorId + '] (' + c.anchorLabel + ')';
+        return (i + 1) + '. ' + head + (c.quote ? '\n   quote: "' + c.quote + '"' : '') + '\n   comment: ' + c.body;
+      }).join('\n\n') + '\n';
+    }
+    return out;
   }
   function copyFeedback() {
-    if (!comments.length) { toast('No comments to copy'); return; }
+    if (!hasFeedback()) { toast('Nothing to copy yet'); return; }
     var t = payload();
     var done = function () { toast('Feedback copied ✓'); };
     if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, done);
@@ -681,7 +749,7 @@ flowchart LR
   }
   document.getElementById('copyDock').onclick = copyFeedback;
   document.getElementById('dlFb').onclick = function () {
-    if (!comments.length) { toast('No comments to download'); return; }
+    if (!hasFeedback()) { toast('Nothing to download yet'); return; }
     var blob = new Blob([payload()], { type: 'text/markdown' });
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'plan-feedback.md'; a.click(); URL.revokeObjectURL(a.href);
   };
@@ -738,6 +806,12 @@ flowchart LR
 - **File trees:** nested `<ul class="filetree">`, each label wrapped in `<span>`;
   a folder is any `<li>` that contains a nested `<ul>`. Mark files with
   `data-new`/`data-edit` for pills. Never ship a file map as a `<pre>` text block.
+- **Open questions as answerable chips.** Each question is a `<div class="qa"
+  data-qid="…" data-q="…">` with a `.q-text`, a `.q-opts` row of `<button
+  class="qopt">` (one per real choice), and an optional `.q-other` write-in input.
+  Mark the recommended option `data-rec` — it's **pre-selected by default** so the
+  user approves by exception. Selections persist and export under "Decisions". Don't
+  fall back to plain "Recommended default: …" prose.
 - **Stable anchor ids** derived from content; feedback round-trips on them.
   General comments use the reserved `__general__` id and export as `[general]`.
 - **Brand logos:** `<svg class="brand" style="color:#BRAND"><use href="#b-NAME"/></svg>`.
