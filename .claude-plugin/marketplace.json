@@ -1,14 +1,18 @@
 {
   "name": "option-skills",
   "owner": {
-    "name": "Option",
-    "url": "https://github.com/option-ai"
+    "name": "Option"
+  },
+  "metadata": {
+    "description": "Skills by Option.",
+    "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "visual-plan",
+      "description": "Turn text plans into rich, interactive, self-contained HTML plans with diagrams (Mermaid), brand-logo architecture maps, rendered file trees, anchored commenting, and one-click Cloudflare deploy.",
       "source": "./",
-      "description": "Turn text plans into rich, interactive, self-contained HTML plans with diagrams, anchored commenting, and Cloudflare deploy."
+      "skills": ["./skills/visual-plan"]
     }
   ]
 }
