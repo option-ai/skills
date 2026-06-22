@@ -1,6 +1,11 @@
 # Option Skills
 
-[![skills.sh](https://skills.sh/b/option-ai/skills)](https://skills.sh/option-ai/skills)
+[![skills.sh](https://img.shields.io/badge/skills.sh-option--ai%2Fskills-black)](https://skills.sh/option-ai/skills)
+[![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+<!-- Once the repo is indexed on skills.sh (after real installs), the live install-count
+     badge works: [![skills.sh](https://skills.sh/b/option-ai/skills)](https://skills.sh/option-ai/skills) -->
+
 
 [Agent Skills](https://code.claude.com/docs/en/skills) by Option, for Claude Code
 (and other agents). Browse them, or install one with:
