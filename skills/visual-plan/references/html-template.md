@@ -43,21 +43,28 @@ stable `data-anchor-id` + `data-anchor-label`.
   })();
 </script>
 <style>
-  /* ===== Claude Code palette ===== */
+  /* ===== Palette (foglamp-inspired: neutral grayscale surfaces, layered shadows,
+           clay accent used sparingly — foglamp's own Anthropic vendor color) ===== */
   :root { --maxw: 1080px; --pad: 22px; --panel: 360px; }
   :root[data-theme="dark"] {
-    --bg: #1a1916; --bg-elev: #211f1c; --card: #28251f; --card-2: #2f2b25;
-    --line: #3a352e; --line-strong: #4a443b; --fg: #ece8df; --muted: #9c9588;
-    --accent: #d97757; --accent-soft: #36281f; --accent-line: #6b4733; --on-accent: #1a1916;
-    --add: #84c08a; --add-bg: #1d2a1d; --del: #e08a82; --del-bg: #2c1c1a;
-    --warn: #d9b266; --warn-bg: #2a2415; --shadow: 0 12px 40px rgba(0,0,0,.5);
+    --bg: #1c1c1c; --bg-elev: #232323; --card: #2e2e2e; --card-2: #3d3d3d;
+    --line: rgba(255,255,255,.09); --line-strong: rgba(255,255,255,.16); --fg: #fafafa; --muted: #9e9e9e;
+    --accent: #d97757; --accent-soft: rgba(217,119,87,.14); --accent-line: rgba(217,119,87,.42); --on-accent: #1c1c1c;
+    --add: #86d39a; --add-bg: rgba(34,197,94,.13); --add-line: rgba(34,197,94,.3);
+    --del: #f1808e; --del-bg: rgba(244,63,94,.13); --del-line: rgba(244,63,94,.34);
+    --warn: #e3b341; --warn-bg: rgba(245,158,11,.12); --warn-line: rgba(245,158,11,.34);
+    --card-shadow: inset 0 1px 0 0 rgba(255,255,255,.03), inset 0 0 0 1px rgba(255,255,255,.04), 0 0 0 1px rgba(0,0,0,.12), 0 2px 2px rgba(0,0,0,.1), 0 4px 4px rgba(0,0,0,.1);
+    --shadow: 0 12px 40px rgba(0,0,0,.55);
   }
   :root[data-theme="light"] {
-    --bg: #f7f5ef; --bg-elev: #ffffff; --card: #ffffff; --card-2: #f3f1e8;
-    --line: #e7e3d7; --line-strong: #d8d3c4; --fg: #2c2a24; --muted: #6f6a5d;
-    --accent: #c15f3c; --accent-soft: #f7e9e1; --accent-line: #e3b9a6; --on-accent: #ffffff;
-    --add: #2f7d3a; --add-bg: #e9f3e7; --del: #c0392b; --del-bg: #fbeae7;
-    --warn: #97751f; --warn-bg: #f7eecb; --shadow: 0 12px 40px rgba(60,50,40,.18);
+    --bg: #fbfbfa; --bg-elev: #ffffff; --card: #ffffff; --card-2: #f3f3f1;
+    --line: rgba(0,0,0,.10); --line-strong: rgba(0,0,0,.16); --fg: #232323; --muted: #777777;
+    --accent: #c15f3c; --accent-soft: rgba(193,95,60,.10); --accent-line: rgba(193,95,60,.4); --on-accent: #ffffff;
+    --add: #2f7d3a; --add-bg: rgba(34,197,94,.12); --add-line: rgba(34,197,94,.35);
+    --del: #c0392b; --del-bg: rgba(244,63,94,.1); --del-line: rgba(244,63,94,.35);
+    --warn: #97751f; --warn-bg: rgba(245,158,11,.13); --warn-line: rgba(245,158,11,.4);
+    --card-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 1px 2px -1px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+    --shadow: 0 12px 40px rgba(40,40,40,.16);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -103,8 +110,11 @@ stable `data-anchor-id` + `data-anchor-label`.
   .version-pop .vrow { display: flex; align-items: baseline; gap: 8px; padding: 6px 9px; border-radius: 7px; text-decoration: none; color: var(--fg); font-size: 13px; }
   .version-pop .vrow:hover { background: var(--card-2); }
   .version-pop .vrow .vn { font-weight: 600; color: var(--accent); }
+  .version-pop .vrow .vlabel { color: var(--muted); font-size: 12px; }
   .version-pop .vrow .vd { color: var(--muted); font-size: 11.5px; margin-left: auto; }
-  .version-pop .vrow.current { background: var(--accent-soft); }
+  .version-pop a.vrow { cursor: pointer; }
+  .version-pop a.vrow .vn::after { content: " ↗"; color: var(--muted); font-weight: 400; }
+  .version-pop .vrow.current { box-shadow: inset 0 0 0 1.5px var(--accent-line); }
 
   /* ===== Subtle badges (foglamp-style: small, low-contrast, dot/ghost — never loud pills) ===== */
   .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; line-height: 1.6; border-radius: 999px;
@@ -113,7 +123,7 @@ stable `data-anchor-id` + `data-anchor-label`.
   .tag.ok { color: var(--add); } .tag.warn { color: var(--warn); } .tag.info { color: var(--accent); } .tag.risk { color: var(--del); }
 
   /* ===== Blocks ===== */
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .card { background: var(--card); border-radius: 16px; padding: 16px; box-shadow: var(--card-shadow); }
   /* JS sets --cols to a BALANCED count so the last row is never an orphan (4 -> 2x2) */
   .grid { display: grid; gap: 12px; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); margin: 14px 0; }
   @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
@@ -133,7 +143,8 @@ stable `data-anchor-id` + `data-anchor-label`.
   .diff .add { background: var(--add-bg); color: var(--add); display: block; margin: 0 -13px; padding: 0 13px; }
   .diff .del { background: var(--del-bg); color: var(--del); display: block; margin: 0 -13px; padding: 0 13px; }
   /* squared off (no rounding) — cleaner, less "AI card" */
-  .callout { border-left: 3px solid var(--warn); background: var(--warn-bg); padding: 11px 15px; border-radius: 0; }
+  /* foglamp callout: faint tint + 1px colored border; body stays readable, tone via border/tint (default = warn) */
+  .callout { border: 1px solid var(--warn-line); background: var(--warn-bg); color: var(--fg); padding: 11px 15px; border-radius: 10px; }
   table { border-collapse: collapse; width: 100%; font-size: 14px; }
   th, td { border: 1px solid var(--line); padding: 7px 11px; text-align: left; }
   th { background: var(--card-2); }
@@ -143,34 +154,45 @@ stable `data-anchor-id` + `data-anchor-label`.
   .qa + .qa { padding-top: 16px; border-top: 1px solid var(--line); }
   .qa .q-text { font-weight: 600; margin-bottom: 9px; }
   .qa .q-opts { display: flex; flex-wrap: wrap; gap: 8px; }
-  .qopt { font: inherit; font-size: 13px; cursor: pointer; background: var(--card); color: var(--fg);
-    border: 1px solid var(--line-strong); border-radius: 7px; padding: 7px 12px; display: inline-flex; align-items: center; gap: 7px; }
-  .qopt:hover { border-color: var(--accent); }
-  .qopt.sel { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
-  .qopt .rec-tag { font-size: 10px; opacity: .7; }
+  /* foglamp toggle/chip: transparent by default, MUTED-gray when selected (not a solid fill) */
+  .qopt { font: inherit; font-size: 13px; cursor: pointer; background: transparent; color: var(--fg);
+    box-shadow: var(--card-shadow); border: 0; border-radius: 14px; padding: 8px 13px; display: inline-flex; align-items: center; gap: 8px; transition: background .12s; }
+  .qopt:hover { background: var(--card-2); }
+  .qopt.sel { background: var(--card-2); color: var(--fg); box-shadow: 0 0 0 1.5px var(--accent-line), var(--card-shadow); }
+  .qopt.sel .rec-tag { color: var(--accent); }
+  .qopt .rec-tag { font-size: 10.5px; color: var(--muted); }
   .qa .q-other { margin-top: 9px; }
   .qa .q-other input { width: 100%; max-width: 380px; background: var(--card); color: var(--fg);
     border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; font: inherit; font-size: 13px; }
   .qa .q-other input:focus { outline: none; border-color: var(--accent); }
 
-  /* ===== Mermaid ===== */
-  /* color:transparent hides the raw source until JS renders the SVG (or a fallback); no flash */
-  .mermaid { background: var(--bg-elev); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 14px 0; text-align: center; overflow: auto; color: transparent; min-height: 40px; }
+  /* ===== Mermaid — fixed-size viewport with pan/zoom (long diagrams stay readable) ===== */
+  .mermaid { position: relative; height: clamp(280px, 56vh, 560px); margin: 14px 0; border-radius: 16px;
+    background: var(--card); box-shadow: var(--card-shadow); overflow: hidden; color: transparent; }
   .mermaid.done { color: inherit; }
-  .mermaid svg { max-width: 100%; height: auto; }
-  .mermaid-fallback { text-align: left; }
+  .mermaid > svg { position: absolute; top: 0; left: 0; transform-origin: 0 0; max-width: none !important; cursor: grab; user-select: none; }
+  .mermaid.grab > svg { cursor: grabbing; }
+  .mermaid.fs { position: fixed; inset: 3vh 3vw; height: auto; width: auto; z-index: 95; }
+  .mz-bar { position: absolute; bottom: 9px; right: 9px; z-index: 3; display: flex; gap: 2px; padding: 3px;
+    background: color-mix(in srgb, var(--bg-elev) 88%, transparent); backdrop-filter: blur(8px); border-radius: 11px; box-shadow: var(--card-shadow); }
+  .mz-bar button { min-width: 27px; height: 27px; padding: 0 7px; display: grid; place-items: center; border: 0; background: transparent;
+    color: var(--muted); cursor: pointer; border-radius: 8px; font: inherit; font-size: 14px; }
+  .mz-bar button:hover { background: var(--card-2); color: var(--fg); }
+  .mz-hint { position: absolute; bottom: 12px; left: 13px; z-index: 3; font-size: 11px; color: var(--muted); pointer-events: none; }
+  .mermaid-fallback { height: auto; overflow: auto; color: var(--fg) !important; padding: 14px; text-align: left; }
+  .mermaid-fallback > svg, .mermaid-fallback .mz-bar, .mermaid-fallback .mz-hint { display: none; }
   .mermaid-note { font-size: 12px; color: var(--warn); margin-bottom: 8px; }
-  .mermaid-fallback pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; margin: 0; white-space: pre; overflow: auto; font-size: 12.5px; color: var(--fg); }
+  .mermaid-fallback pre { background: var(--bg-elev); border: 1px solid var(--line); border-radius: 8px; padding: 10px; margin: 0; white-space: pre; overflow: auto; font-size: 12.5px; color: var(--fg); }
 
   /* ===== Brand-logo diagram kit (for product/network maps) ===== */
-  .diagram { border: 1px solid var(--line); border-radius: 12px; background: var(--bg-elev); padding: 18px; margin: 14px 0; }
+  .diagram { border-radius: 16px; background: var(--card); box-shadow: var(--card-shadow); padding: 18px; margin: 14px 0; }
   .dlayer { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-bottom: 10px; }
-  .dnode { background: var(--card); border: 1px solid var(--line-strong); border-radius: 10px; padding: 11px 13px; }
+  .dnode { background: var(--bg-elev); box-shadow: inset 0 0 0 1px var(--line); border-radius: 12px; padding: 11px 13px; }
   .dnode .t { font-weight: 600; display: flex; align-items: center; gap: 8px; }
   .dnode .s { color: var(--muted); font-size: 12.5px; margin-top: 3px; }
-  .dbar { background: var(--card); border: 1px solid var(--line-strong); border-radius: 10px; padding: 12px 14px; text-align: center; margin-bottom: 10px; }
+  .dbar { background: var(--bg-elev); box-shadow: inset 0 0 0 1px var(--line); border-radius: 12px; padding: 12px 14px; text-align: center; margin-bottom: 10px; }
   .dbar .t { font-weight: 600; } .dbar .s { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
-  .dbar.ours { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent-soft); } .dbar.ours .t { color: var(--accent); }
+  .dbar.ours { box-shadow: inset 0 0 0 1.5px var(--accent-line); } .dbar.ours .t { color: var(--accent); }
   .dflow { text-align: center; color: var(--muted); margin: -2px 0 6px; }
 
   /* ===== File tree ===== */
@@ -283,9 +305,9 @@ stable `data-anchor-id` + `data-anchor-label`.
   .vp-progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: var(--accent); z-index: 70; transition: width .1s linear; }
   nav.toc a.active { color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
   /* callout tone variants (default is warn) */
-  .callout.ok { border-left-color: var(--add); background: var(--add-bg); }
-  .callout.info { border-left-color: var(--accent); background: var(--accent-soft); }
-  .callout.risk { border-left-color: var(--del); background: var(--del-bg); }
+  .callout.ok { border-color: var(--add-line); background: var(--add-bg); }
+  .callout.info { border-color: var(--accent-line); background: var(--accent-soft); }
+  .callout.risk { border-color: var(--del-line); background: var(--del-bg); }
   /* copy-code button (JS wraps pre in .code-wrap) */
   .code-wrap { position: relative; }
   .code-wrap > .copy-code { position: absolute; top: 8px; right: 8px; opacity: 0; transition: opacity .12s;
@@ -363,6 +385,8 @@ stable `data-anchor-id` + `data-anchor-label`.
   <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></symbol>
   <symbol id="i-history" viewBox="0 0 24 24"><path d="M12 8l0 4l2 2"/><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"/></symbol>
   <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M6 9l6 6l6 -6"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 8v-2a2 2 0 0 1 2 -2h2"/><path d="M4 16v2a2 2 0 0 0 2 2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M16 20h2a2 2 0 0 0 2 -2v-2"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><path d="M5 5m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z"/><path d="M9 9h6v6h-6z"/><path d="M3 10h2M3 14h2M10 3v2M14 3v2M21 10h-2M21 14h-2M10 21v-2M14 21v-2"/></symbol>
 </svg>
 
 <!-- ===== Brand logo sprite (Simple Icons, MIT, fill). Add more by copying exact SI paths. ===== -->
@@ -378,6 +402,14 @@ stable `data-anchor-id` + `data-anchor-label`.
   <symbol id="b-github" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></symbol>
   <symbol id="b-linkedin" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></symbol>
   <symbol id="b-x" viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></symbol>
+  <symbol id="b-cloudflare" viewBox="0 0 24 24"><path d="M16.5088 16.8447c.1475-.5068.0908-.9707-.1553-1.3154-.2246-.3164-.6045-.499-1.0615-.5205l-8.6592-.1123a.1559.1559 0 0 1-.1333-.0713c-.0283-.042-.0351-.0986-.021-.1553.0278-.084.1123-.1484.2036-.1562l8.7359-.1123c1.0351-.0489 2.1601-.8868 2.5537-1.9136l.499-1.3013c.0215-.0561.0293-.1128.0147-.168-.5625-2.5463-2.835-4.4453-5.5499-4.4453-2.5039 0-4.6284 1.6177-5.3876 3.8614-.4927-.3658-1.1187-.5625-1.794-.499-1.2026.119-2.1665 1.083-2.2861 2.2856-.0283.31-.0069.6128.0635.894C1.5683 13.171 0 14.7754 0 16.752c0 .1748.0142.3515.0352.5273.0141.083.0844.1475.1689.1475h15.9814c.0909 0 .1758-.0645.2032-.1553l.12-.4268zm2.7568-5.5634c-.0771 0-.1611 0-.2383.0112-.0566 0-.1054.0415-.127.0976l-.3378 1.1744c-.1475.5068-.0918.9707.1543 1.3164.2256.3164.6055.498 1.0625.5195l1.8437.1133c.0557 0 .1055.0263.1329.0703.0283.043.0351.1074.0214.1562-.0283.084-.1132.1485-.204.1553l-1.921.1123c-1.041.0488-2.1582.8867-2.5527 1.914l-.1406.3585c-.0283.0713.0215.1416.0986.1416h6.5977c.0771 0 .1474-.0489.169-.126.1122-.4082.1757-.837.1757-1.2803 0-2.6025-2.125-4.727-4.7344-4.727"/></symbol>
+  <symbol id="b-vercel" viewBox="0 0 24 24"><path d="M24 22.525H0l12-21.05 12 21.05z"/></symbol>
+  <symbol id="b-openai" viewBox="0 0 24 24"><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"/></symbol>
+  <symbol id="b-anthropic" viewBox="0 0 24 24"><path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"/></symbol>
+  <symbol id="b-gemini" viewBox="0 0 24 24"><path d="M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81"/></symbol>
+  <symbol id="b-perplexity" viewBox="0 0 24 24"><path d="M22.3977 7.0896h-2.3106V.0676l-7.5094 6.3542V.1577h-1.1554v6.1966L4.4904 0v7.0896H1.6023v10.3976h2.8882V24l6.932-6.3591v6.2005h1.1554v-6.0469l6.9318 6.1807v-6.4879h2.8882V7.0896zm-3.4657-4.531v4.531h-5.355l5.355-4.531zm-13.2862.0676 4.8691 4.4634H5.6458V2.6262zM2.7576 16.332V8.245h7.8476l-6.1149 6.1147v1.9723H2.7576zm2.8882 5.0404v-3.8852h.0001v-2.6488l5.7763-5.7764v7.0111l-5.7764 5.2993zm12.7086.0248-5.7766-5.1509V9.0618l5.7766 5.7766v6.5588zm2.8882-5.0652h-1.733v-1.9723L13.3948 8.245h7.8478v8.087z"/></symbol>
+  <symbol id="b-supabase" viewBox="0 0 24 24"><path d="M11.9 1.036c-.015-.986-1.26-1.41-1.874-.637L.764 12.05C-.33 13.427.65 15.455 2.409 15.455h9.579l.113 7.51c.014.985 1.259 1.408 1.873.636l9.262-11.653c1.093-1.375.113-3.403-1.645-3.403h-9.642z"/></symbol>
+  <symbol id="b-googlecloud" viewBox="0 0 24 24"><path d="M12.19 2.38a9.344 9.344 0 0 0-9.234 6.893c.053-.02-.055.013 0 0-3.875 2.551-3.922 8.11-.247 10.941l.006-.007-.007.03a6.717 6.717 0 0 0 4.077 1.356h5.173l.03.03h5.192c6.687.053 9.376-8.605 3.835-12.35a9.365 9.365 0 0 0-2.821-4.552l-.043.043.006-.05A9.344 9.344 0 0 0 12.19 2.38zm-.358 4.146c1.244-.04 2.518.368 3.486 1.15a5.186 5.186 0 0 1 1.862 4.078v.518c3.53-.07 3.53 5.262 0 5.193h-5.193l-.008.009v-.04H6.785a2.59 2.59 0 0 1-1.067-.23h.001a2.597 2.597 0 1 1 3.437-3.437l3.013-3.012A6.747 6.747 0 0 0 8.11 8.24c.018-.01.04-.026.054-.023a5.186 5.186 0 0 1 3.67-1.69z"/></symbol>
 </svg>
 
 <div class="wrap">
@@ -401,11 +433,14 @@ stable `data-anchor-id` + `data-anchor-label`.
         <span class="m-item"><svg class="icon"><use href="#i-calendar"/></svg> 2026-06-21</span>
         <span class="version">
           <button class="vbtn" id="vBtn" type="button"><svg class="icon"><use href="#i-history"/></svg> v3 <svg class="icon"><use href="#i-chevron-down"/></svg></button>
+          <!-- Each prior version is a LINK only if it has its own deployed URL. The current
+               version and any version with no separate URL are plain <div> (not links) so
+               clicking never jumps to "#". A version with one label = a changelog entry. -->
           <div class="version-pop" id="versionPop" hidden>
             <div class="vh">Plan versions</div>
-            <a class="vrow current" href="#"><span class="vn">v3</span> current <span class="vd">2026-06-21</span></a>
-            <a class="vrow" href="VERSION_2_URL"><span class="vn">v2</span> <span class="vd">2026-06-20</span></a>
-            <a class="vrow" href="VERSION_1_URL"><span class="vn">v1</span> <span class="vd">2026-06-19</span></a>
+            <div class="vrow current"><span class="vn">v3</span> current · <span class="vlabel">what changed</span> <span class="vd">2026-06-21</span></div>
+            <a class="vrow" href="https://prior-v2-deploy.example.workers.dev"><span class="vn">v2</span> · <span class="vlabel">label</span> <span class="vd">2026-06-20</span></a>
+            <div class="vrow"><span class="vn">v1</span> · <span class="vlabel">label (no separate deploy)</span> <span class="vd">2026-06-19</span></div>
           </div>
         </span>
       </div>
@@ -565,6 +600,34 @@ flowchart LR
     const pre = document.createElement('pre'); pre.textContent = (code || '').trim();
     el.appendChild(note); el.appendChild(pre);
   }
+  // Fixed-viewport pan/zoom so long diagrams stay readable (drag to pan, wheel/buttons to zoom, fullscreen).
+  function setupPanZoom(el) {
+    const svg = el.querySelector('svg'); if (!svg) return;
+    svg.style.maxWidth = 'none';
+    const vb = svg.viewBox && svg.viewBox.baseVal;
+    const natW = (vb && vb.width) || svg.getBoundingClientRect().width || 800;
+    const natH = (vb && vb.height) || svg.getBoundingClientRect().height || 400;
+    svg.setAttribute('width', natW); svg.setAttribute('height', natH); svg.style.height = natH + 'px';
+    const st = { s: 1, x: 0, y: 0 };
+    const apply = () => { svg.style.transform = `translate(${st.x}px,${st.y}px) scale(${st.s})`; };
+    const fit = () => { const vw = el.clientWidth, vh = el.clientHeight; st.s = Math.min(vw / natW, vh / natH) * 0.95; st.x = (vw - natW * st.s) / 2; st.y = (vh - natH * st.s) / 2; apply(); };
+    const zoom = (f, cx, cy) => { const ns = Math.max(0.15, Math.min(8, st.s * f)); cx = cx ?? el.clientWidth / 2; cy = cy ?? el.clientHeight / 2; st.x = cx - (cx - st.x) * (ns / st.s); st.y = cy - (cy - st.y) * (ns / st.s); st.s = ns; apply(); };
+    let drag = null;
+    svg.addEventListener('mousedown', e => { drag = { x: e.clientX, y: e.clientY, ox: st.x, oy: st.y }; el.classList.add('grab'); e.preventDefault(); });
+    window.addEventListener('mousemove', e => { if (!drag) return; st.x = drag.ox + (e.clientX - drag.x); st.y = drag.oy + (e.clientY - drag.y); apply(); });
+    window.addEventListener('mouseup', () => { drag = null; el.classList.remove('grab'); });
+    el.addEventListener('wheel', e => { e.preventDefault(); const r = el.getBoundingClientRect(); zoom(e.deltaY < 0 ? 1.12 : 0.89, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+    const bar = document.createElement('div'); bar.className = 'mz-bar';
+    bar.innerHTML = '<button data-z="out" title="Zoom out">−</button><button data-z="in" title="Zoom in">+</button><button data-z="fit" title="Fit" style="font-size:11px">Fit</button><button data-z="fs" title="Fullscreen"><svg class="icon"><use href="#i-expand"/></svg></button>';
+    const hint = document.createElement('div'); hint.className = 'mz-hint'; hint.textContent = 'drag to pan · scroll to zoom';
+    el.appendChild(bar); el.appendChild(hint);
+    bar.querySelector('[data-z=in]').onclick = () => zoom(1.25);
+    bar.querySelector('[data-z=out]').onclick = () => zoom(0.8);
+    bar.querySelector('[data-z=fit]').onclick = fit;
+    bar.querySelector('[data-z=fs]').onclick = () => { el.classList.toggle('fs'); setTimeout(fit, 60); };
+    fit();
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.mermaid.fs').forEach(m => m.classList.remove('fs')); });
   try {
     const mermaid = (await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')).default;
     let seq = 0;
@@ -574,9 +637,9 @@ flowchart LR
         startOnLoad: false, securityLevel: 'loose', suppressErrorRendering: true,
         theme: dark ? 'dark' : 'default',
         themeVariables: {
-          primaryColor: dark ? '#28251f' : '#ffffff', primaryTextColor: dark ? '#ece8df' : '#2c2a24',
-          primaryBorderColor: '#c15f3c', lineColor: dark ? '#9c9588' : '#6f6a5d',
-          fontFamily: '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif'
+          primaryColor: dark ? '#2e2e2e' : '#ffffff', primaryTextColor: dark ? '#fafafa' : '#232323',
+          primaryBorderColor: dark ? '#555' : '#bbb', lineColor: dark ? '#9e9e9e' : '#777',
+          fontFamily: 'Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif'
         }
       });
       for (let i = 0; i < blocks.length; i++) {
@@ -584,6 +647,7 @@ flowchart LR
         try {
           const { svg } = await mermaid.render('vpm-' + (seq++), src[i]);
           el.classList.remove('mermaid-fallback'); el.classList.add('done'); el.innerHTML = svg;
+          setupPanZoom(el);
         } catch (err) { fallback(el, src[i]); }
       }
     }
@@ -677,6 +741,13 @@ flowchart LR
   if (vBtn && vPop) {
     vBtn.onclick = function (e) { e.stopPropagation(); vPop.hidden = !vPop.hidden; };
     document.addEventListener('click', function (e) { if (!e.target.closest('.version')) vPop.hidden = true; });
+    // never let a placeholder / dead link ("#", unset) navigate or jump to top
+    vPop.querySelectorAll('a.vrow').forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      if (!href || href === '#' || /URL$/.test(href) || /example\./.test(href)) {
+        var div = document.createElement('div'); div.className = a.className; div.innerHTML = a.innerHTML; a.replaceWith(div);
+      } else { a.target = '_blank'; a.rel = 'noopener'; }
+    });
   }
 
   /* ---- Reading progress + scroll-spy TOC ---- */
@@ -1133,9 +1204,18 @@ flowchart LR
 - **Stable anchor ids** derived from content; feedback round-trips on them.
   General comments use the reserved `__general__` id and export as `[general]`.
 - **Brand logos:** `<svg class="brand" style="color:#BRAND"><use href="#b-NAME"/></svg>`.
-  Hexes: WhatsApp `#25D366`, Telegram `#26A5E4`, Signal `#3A76F0`, Discord
-  `#5865F2`, Slack `#4A154B`, Instagram `#E4405F`, Messenger `#0084FF`, Google
-  `#4285F4`, GitHub `currentColor`, LinkedIn `#0A66C2`, X `currentColor`. Add new
-  logos only by copying exact Simple Icons paths — never approximate.
+  In the sprite: socials (`b-whatsapp`/`telegram`/`signal`/`discord`/`slack`/
+  `instagram`/`messenger`/`x`/`linkedin`) + cloud/AI (`b-cloudflare` `#F38020`,
+  `b-vercel` cc, `b-openai` cc, `b-anthropic` `#D97757`, `b-gemini` `#1BA1E3`,
+  `b-perplexity` `#20808D`, `b-supabase` `#3FCF8E`, `b-googlecloud` `#4285F4`,
+  `b-google` `#4285F4`, `b-github` cc). **Never use one brand's logo for another**
+  (Gemini ≠ Google "G"). For a node with no real logo (Cron, KV cache, export…),
+  use `#i-cpu` or no icon — never approximate. Add a logo only by copying its exact
+  Simple Icons path.
+- **Mermaid diagrams get a fixed viewport + pan/zoom automatically** (drag, scroll,
+  −/+/Fit/fullscreen) — author the `<pre class="mermaid">` and the plumbing handles
+  sizing; never hand-size diagrams.
+- **Versions:** a timeline row links only if that version has its own deployed URL;
+  current/undeployed versions are plain `<div>` (no `href="#"`).
 - **Reuse the dock, compose/pin, shortcut, and annotation plumbing verbatim** —
   change content, palette tokens, and diagram/tree contents only.

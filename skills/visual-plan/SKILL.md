@@ -112,37 +112,43 @@ Required structure and behavior:
   (don't defer to `prefers-color-scheme` for the default — dark is the default).
   A header toggle (sun/moon Tabler icon) flips between dark and light; persist the
   choice to `localStorage` and apply it before first paint to avoid a flash.
-- **Claude Code color palette.** Use the Anthropic/Claude palette via CSS
-  variables — clay-coral accent, warm near-black surfaces in dark, cream paper in
-  light (exact tokens are defined in `references/html-template.md`; reuse them
-  verbatim). Do not invent a generic blue/gray scheme. **Dark is the polished
-  default** — it must look intentional, not an inverted afterthought. Do NOT fill
-  large surfaces (diagram nodes, cards) with the soft accent tint; that reads as
-  washed-out. Reserve `--accent`/`--accent-soft` for small emphasis (pills,
-  borders, badges, "our code" highlights) and build diagrams from elevated
-  neutral surfaces with thin accent borders.
+- **Palette: foglamp-inspired neutral grayscale (dark-first).** Use the CSS tokens
+  in `references/html-template.md` verbatim — **neutral grayscale surfaces**
+  (`#1c1c1c` bg, `#2e2e2e` card, `#3d3d3d` muted) with **layered shadows instead of
+  flat borders** (`--card-shadow`), and the **clay accent used sparingly** (links,
+  "our code" highlight, the recommended-chip ring). Do NOT flood surfaces with the
+  accent tint — that reads as washed-out "AI" styling. Selected/recommended states
+  are a **muted-gray background** (`--card-2`) with a thin accent ring, never a
+  solid colored fill. Semantic tints (green/amber/red) are reserved for callouts
+  and status pills. Dark is the polished default; light mode mirrors the tokens.
 - **Tabler icons, inlined.** Use [Tabler](https://tabler.io/icons) icons for all
   UI affordances (theme toggle, comment/annotation, copy, collapse chevrons,
   section markers). Inline each icon's SVG (Tabler is MIT-licensed `currentColor`
   stroke SVG) — never link a CDN or icon font. Define them once as `<symbol>`s in
   a hidden `<svg>` sprite and reference with `<use>`.
-- **Brand logos for named products/services.** Whenever the plan names a
-  recognizable product, network, or service (WhatsApp, Telegram, Signal, Discord,
-  Slack, Instagram, Messenger, Google, GitHub, LinkedIn, X, …) — in diagram nodes,
-  integration lists, coverage tables, or option cards — render its **brand logo**
-  next to the name, not a bare text box. Use the inlined brand-logo sprite in
-  `references/html-template.md` (Simple Icons paths, MIT, `fill="currentColor"`
-  tinted with the brand color). Reuse the sprite's logos; if a needed logo is
-  missing, add it by copying the exact Simple Icons path — never hand-draw or
-  approximate a logo (a wrong logo is worse than none; fall back to a neutral
-  badge + name only when no real logo is available).
+- **Brand logos — only real ones, never substitutes.** For a recognizable
+  product/service named in a diagram node or list, render its **brand logo** from
+  the inlined sprite. The sprite covers socials (WhatsApp, Telegram, Signal,
+  Discord, Slack, Instagram, Messenger, X, LinkedIn) **and cloud/AI** (Cloudflare,
+  Vercel, OpenAI, Anthropic, Gemini, Perplexity, Supabase, Google Cloud, Google,
+  GitHub). Two hard rules, because both were violated before:
+  - **Never use one brand's logo for another** (e.g. the Google "G" for Gemini —
+    use `#b-gemini`). If the exact logo isn't in the sprite, add it by copying the
+    **exact Simple Icons path** (fetch from `cdn.jsdelivr.net/npm/simple-icons` to
+    be sure), or use the generic **`#i-cpu`** fallback icon — never approximate.
+  - **Don't force logos onto generic concept nodes** (e.g. "Cron Trigger", "KV
+    cache", "Excel export"). Those get a neutral Tabler glyph or no icon — a brand
+    logo there is wrong. A node with no real logo simply has no logo.
 - **No header bar — a stacked header.** Don't render a sticky header. At the top
   of the body: a **metadata row** (repo link · branch · date · version badge),
   then the plan name (h1), then the one-line outcome **full width** below — no
   divider line. Fill the metadata from git: repo URL, current branch, today's
   date, and the version `vN`. The version badge opens a **timeline popover** — fill
   its rows with each prior version (`vN` · date · deployed URL) so every version is
-  reachable from the latest.
+  reachable. A row is a **link only if that version has its own deployed URL**
+  (`<a href="https://…">`); the current version and any version without a separate
+  URL are plain `<div>`, never `href="#"` (which just jumps to top). With one deploy
+  URL, the popover is an informational changelog, not links.
 - **The plan is centered in the window; the TOC floats left, out of flow.** The
   body column is centered in the viewport (`margin: 0 auto`). The table-of-contents
   nav is positioned **absolutely/fixed to the left** so it does not occupy layout
